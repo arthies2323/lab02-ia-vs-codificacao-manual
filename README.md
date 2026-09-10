@@ -22,8 +22,9 @@ Disciplina: Laboratório de Experimentação de Software — PUC Minas (2026/2).
 
 - `docs/DESENHO_EXPERIMENTO.md`: hipóteses, variáveis, tratamentos, objetos
   experimentais, desenho, ameaças à validade (Passo 1).
-- `katas/`: katas escolhidos, cada um com enunciado e testes de aceitação
-  (Passo 2).
+- `katas/`: os 6 katas escolhidos, cada um com enunciado e testes de aceitação
+  (Passo 2). Ver [`katas/README.md`](katas/README.md) para a validação de
+  dificuldade equivalente e o protocolo anti-contaminação da S02.
 - `scripts/`: scripts de cronometragem (time-to-green) e de coleta das
   métricas estáticas (Radon/jscpd) sobre o código final de cada trial.
 - `data/`: dados brutos coletados por trial (tempo, testes passando,
@@ -35,6 +36,12 @@ Disciplina: Laboratório de Experimentação de Software — PUC Minas (2026/2).
 
 ```bash
 python -m pip install -r scripts/requirements.txt
+```
+
+Testes de aceitação de um kata:
+
+```bash
+python -m pytest katas/<nome-do-kata>
 ```
 
 Cronometragem de um trial:
