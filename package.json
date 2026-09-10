@@ -1,0 +1,8 @@
+{
+  "name": "lab02-ia-vs-codificacao-manual",
+  "private": true,
+  "description": "Dependencia reproduzivel para coleta de duplicacao de codigo da RQ3.",
+  "devDependencies": {
+    "jscpd": "5.2.0"
+  }
+}
