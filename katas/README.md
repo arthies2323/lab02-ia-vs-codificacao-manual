@@ -137,7 +137,7 @@ mais estáveis.
 
 ## ⚠️ Protocolo anti-contaminação (obrigatório na S02)
 
-O tratamento usa **GitHub Copilot**, que indexa o workspace aberto. Sem
+O tratamento usa **Claude Code (Claude Opus 5)**, que indexa o workspace aberto. Sem
 cuidado, o experimento se contamina de duas formas:
 
 1. **Solução de referência no repositório.** Se existir um arquivo com a solução
@@ -148,7 +148,7 @@ cuidado, o experimento se contamina de duas formas:
 
 2. **Soluções de um integrante contaminando os seguintes.** Se o integrante A
    commitar suas soluções e B fizer `pull` antes de rodar seus trials, o
-   Copilot de B indexa as soluções de A.
+   Claude Code de B indexa as soluções de A.
 
 3. **O slot vizinho do próprio integrante.** Como os 6 slots convivem na mesma
    árvore, a solução `sem-ia` de um kata fica ao lado da `com-ia` do mesmo
@@ -171,22 +171,25 @@ cuidado, o experimento se contamina de duas formas:
   A ordem inversa contamina o `com-ia`; nenhuma ordem elimina o efeito de
   aprendizado — ver a ressalva abaixo.
 
-### Ressalva de desenho: o mesmo kata nos dois tratamentos
+### Decisão de desenho: o mesmo kata nos dois tratamentos
 
-A estrutura de 6 slots por kata comporta os dois desenhos, mas eles não são
-equivalentes:
+A estrutura de 6 slots por kata comporta dois desenhos possíveis
+(contrabalanceado ou repetido); o grupo avaliou os dois e **decidiu pelo
+repetido**, formalizado em
+[`docs/DESENHO_EXPERIMENTO.md`](../docs/DESENHO_EXPERIMENTO.md#f-tipo-de-projeto-experimental):
 
-- **Contrabalanceado (12 trials).** Cada integrante resolve cada kata uma única
-  vez; metade dos katas com IA, metade sem. Cada kata aparece sob os dois
-  tratamentos ao longo do trio. É o desenho previsto no Passo 1
-  (`docs/DESENHO_EXPERIMENTO.md`) e o que sustenta a comparação; nele, cada
-  integrante preenche apenas 1 dos 2 slots de cada kata.
-- **Repetido (24 trials).** Cada integrante resolve cada kata duas vezes, uma em
-  cada tratamento. Dobra o n, mas introduz **efeito de aprendizado**: a segunda
-  passagem pelo mesmo kata é mais rápida por já conhecer o problema, não pelo
-  tratamento. O ganho medido em RQ1 fica confundido com a ordem, e o time-box de
-  35 min não protege contra isso.
+- **Repetido (24 trials) — escolhido.** Cada integrante resolve os 4 katas
+  duas vezes, uma em cada tratamento (8 trials por integrante). Dobra o N em
+  relação ao contrabalanceado, mas introduz **efeito de aprendizado**: a
+  segunda passagem pelo mesmo kata é mais rápida por já conhecer o problema,
+  não necessariamente pelo tratamento. O ganho medido em RQ1 fica confundido
+  com a ordem, e o time-box de 35 min não protege contra isso — por isso é
+  **obrigatório** declarar essa ameaça na leitura de RQ1 no relatório final.
+- **Contrabalanceado (12 trials) — não usado.** Cada integrante resolveria
+  cada kata uma única vez (metade com IA, metade sem), com cada kata
+  aparecendo nos dois tratamentos ao longo do trio. Evitaria o efeito de
+  aprendizado, ao custo de menos dados por integrante.
 
-Se o grupo optar pelo desenho repetido, a ordem (`com-ia` primeiro) precisa ser
-a mesma para todos e o efeito de aprendizado precisa ser declarado como ameaça à
-validade interna no relatório.
+**Regra obrigatória por causa da escolha acima:** a ordem é sempre `com-ia`
+primeiro, depois `sem-ia`, igual para todo mundo — é a regra já listada
+acima em "Regras para a S02".
