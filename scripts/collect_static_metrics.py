@@ -32,8 +32,8 @@ CSV_COLUMNS = [
     "integrante",
     "kata",
     "tratamento",
-    "loc",
-    "sloc",
+    "loc",   #linhas totais
+    "sloc",  #linhas de código de verdade (sem comentários, linhas em branco, etc)
     "complexity_avg",
     "mi_avg",
     "duplication_pct",

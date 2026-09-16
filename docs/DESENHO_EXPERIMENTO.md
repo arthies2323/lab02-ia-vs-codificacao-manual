@@ -43,13 +43,10 @@ Uso ou não de assistente de IA generativa durante a resolução do kata
 
 ## (D) Tratamentos
 
-1. **Com IA** — assistente de IA habilitado durante todo o trial. Conforme
-   registrado no protocolo anti-contaminação
-   ([`katas/README.md`](../katas/README.md)), o assistente em uso é o
-   **GitHub Copilot**, mesmo assistente em todos os trials do experimento.
-   Essa escolha pode ainda ser revisitada pelo grupo antes do início da
-   execução (Sprint 2); qualquer mudança deve ser registrada aqui e no
-   relatório final.
+1. **Com IA** — assistente de IA habilitado durante todo o trial. O
+   assistente em uso é o **Claude Code (Claude Opus 5)**, mesmo assistente
+   em todos os trials do experimento — escolha permitida pelo enunciado do
+   laboratório, que lista Claude entre os chatbots aceitos.
 2. **Sem IA** — codificação manual, sem qualquer assistente de IA.
 
 ## (E) Objetos experimentais
@@ -82,7 +79,7 @@ Mitigação parcial obrigatória (protocolo em
 [`katas/README.md`](../katas/README.md)): a ordem é sempre **com-ia antes de
 sem-ia** para todos os integrantes, e o slot do outro tratamento fica fora
 do workspace aberto na IDE durante o trial, para não contaminar via
-indexação do Copilot. Isso não remove o efeito de aprendizado sobre o
+indexação do Claude Code. Isso não remove o efeito de aprendizado sobre o
 tempo (RQ1) — só evita que o assistente "veja" a resposta pronta do outro
 tratamento.
 
@@ -121,8 +118,8 @@ sem IA), ou seja 8 trials por integrante (4 por tratamento).
   reproduzir uma solução memorizada do treinamento, em vez de efetivamente
   ajudar. Mitigação: os 4 katas são adaptações que invalidam a solução
   canônica (detalhado em [`katas/README.md`](../katas/README.md)).
-- **Contaminação via indexação do workspace pelo Copilot.** Ameaça
-  identificada durante a preparação (Passo 2): como o Copilot indexa os
+- **Contaminação via indexação do workspace pelo Claude Code.** Ameaça
+  identificada durante a preparação (Passo 2): como o Claude Code indexa os
   arquivos abertos no editor, (i) soluções de referência não podem ficar
   versionadas no repositório, e (ii) um integrante não pode dar `pull` das
   soluções de outro antes de terminar seus próprios trials. Protocolo

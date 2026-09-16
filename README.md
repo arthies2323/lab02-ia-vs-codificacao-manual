@@ -14,8 +14,8 @@ Disciplina: Laboratório de Experimentação de Software — PUC Minas (2026/2).
 - **Métricas estáticas:** [Radon](https://radon.readthedocs.io/) (complexidade
   ciclomática, LOC, Maintainability Index) + [jscpd](https://github.com/kucherenko/jscpd)
   (duplicação de código).
-- **Assistente de IA (tratamento):** a definir/confirmar com o grupo — candidato
-  atual: GitHub Copilot (mesmo assistente em todos os trials).
+- **Assistente de IA (tratamento):** Claude Code (Claude Opus 5), mesmo
+  assistente em todos os trials do experimento.
 - **Board:** GitHub Projects (v2), uma Issue por kata/tratamento/integrante.
 
 ## Estrutura do repositório

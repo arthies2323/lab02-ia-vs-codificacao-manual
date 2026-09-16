@@ -137,7 +137,7 @@ mais estáveis.
 
 ## ⚠️ Protocolo anti-contaminação (obrigatório na S02)
 
-O tratamento usa **GitHub Copilot**, que indexa o workspace aberto. Sem
+O tratamento usa **Claude Code (Claude Opus 5)**, que indexa o workspace aberto. Sem
 cuidado, o experimento se contamina de duas formas:
 
 1. **Solução de referência no repositório.** Se existir um arquivo com a solução
@@ -148,7 +148,7 @@ cuidado, o experimento se contamina de duas formas:
 
 2. **Soluções de um integrante contaminando os seguintes.** Se o integrante A
    commitar suas soluções e B fizer `pull` antes de rodar seus trials, o
-   Copilot de B indexa as soluções de A.
+   Claude Code de B indexa as soluções de A.
 
 3. **O slot vizinho do próprio integrante.** Como os 6 slots convivem na mesma
    árvore, a solução `sem-ia` de um kata fica ao lado da `com-ia` do mesmo
