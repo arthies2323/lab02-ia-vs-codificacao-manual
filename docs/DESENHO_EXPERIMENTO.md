@@ -54,33 +54,48 @@ Uso ou não de assistente de IA generativa durante a resolução do kata
 
 ## (E) Objetos experimentais
 
-6 katas em Python, de dificuldade comparável, listados e documentados em
-[`katas/README.md`](../katas/README.md): `agenda-turnos`, `cifra-alternada`,
-`compactar-serie`, `fatura-progressiva`, `ranking-liga`, `torre-blocos`. Cada
-um é uma adaptação de um exercício clássico, alterada de forma a invalidar a
-solução canônica (mitigação de memorização — ver ameaças à validade). Todos
-têm testes de aceitação automatizados (pytest) e uma validação objetiva de
-dificuldade equivalente (SLOC e complexidade ciclomática de uma solução de
-referência), documentada no mesmo arquivo.
+4 katas em Python, de dificuldade comparável, listados e documentados em
+[`katas/README.md`](../katas/README.md): `agenda-turnos`, `compactar-serie`,
+`fatura-progressiva`, `ranking-liga` (reduzido de 6 para 4 durante a
+preparação, para viabilizar o desenho repetido descrito em F sem estourar o
+tempo de execução da S02). Cada um é uma adaptação de um exercício clássico,
+alterada de forma a invalidar a solução canônica (mitigação de memorização —
+ver ameaças à validade). Todos têm testes de aceitação automatizados
+(pytest) e uma validação objetiva de dificuldade equivalente (SLOC e
+complexidade ciclomática de uma solução de referência), documentada no
+mesmo arquivo.
 
 ## (F) Tipo de projeto experimental
 
-Crossover / within-subject, contrabalanceado: cada integrante do trio
-resolve os 6 katas, metade com IA e metade sem IA. Nenhum integrante resolve
-o mesmo kata duas vezes (isso contaminaria o resultado por efeito de
-aprendizado/memorização — ver seção H). Em vez disso, a ordem e a atribuição
-de tratamento por kata são contrabalanceadas **entre os integrantes**, de
-forma que cada um dos 6 katas seja resolvido sob os dois tratamentos ao
-longo do trio (por pessoas diferentes). A comparação estatística (Sprint 3)
-é pareada por integrante: mediana dos tempos/métricas desse integrante nos
-katas com IA vs. nos katas sem IA — cada pessoa funciona como seu próprio
-controle, o que neutraliza a variação individual de habilidade.
+Crossover / within-subject, **repetido**: cada integrante do trio resolve os
+4 katas **duas vezes cada**, uma vez com IA e uma vez sem IA (8 trials por
+integrante). Essa é uma revisão do desenho original — a alternativa
+contrabalanceada (cada kata resolvido uma única vez por pessoa, com a
+atribuição de tratamento combinada entre os três) foi considerada e está
+descrita, junto com o trade-off entre as duas, em
+[`katas/README.md`](../katas/README.md#L174) ("Ressalva de desenho"). O
+grupo optou pelo desenho repetido para dobrar o N por integrante; a
+contrapartida é o efeito de aprendizado descrito na seção H, que passa a ser
+uma ameaça **aceita e declarada**, não eliminada pelo desenho.
+
+Mitigação parcial obrigatória (protocolo em
+[`katas/README.md`](../katas/README.md)): a ordem é sempre **com-ia antes de
+sem-ia** para todos os integrantes, e o slot do outro tratamento fica fora
+do workspace aberto na IDE durante o trial, para não contaminar via
+indexação do Copilot. Isso não remove o efeito de aprendizado sobre o
+tempo (RQ1) — só evita que o assistente "veja" a resposta pronta do outro
+tratamento.
+
+A comparação estatística (Sprint 3) é pareada por (integrante, kata): tempo
+com IA vs. tempo sem IA do mesmo par pessoa+kata. É um pareamento mais
+direto que o do desenho contrabalanceado, mas o resultado da RQ1
+especificamente precisa ser lido com a ressalva do efeito de aprendizado
+registrada no relatório final.
 
 ## (G) Quantidade de medições
 
-3 integrantes × 6 katas = 18 trials no total (9 com IA / 9 sem IA), ou seja
-6 trials por integrante (3 por tratamento) — dentro da faixa de 4–6 trials
-recomendada pelo enunciado.
+3 integrantes × 4 katas × 2 tratamentos = 24 trials no total (12 com IA / 12
+sem IA), ou seja 8 trials por integrante (4 por tratamento).
 
 ## (H) Ameaças à validade
 
@@ -88,11 +103,15 @@ recomendada pelo enunciado.
   pode enviesar os últimos trials (fadiga, ou familiaridade crescente com o
   padrão de teste do experimento). Mitigação: ordem contrabalanceada entre
   integrantes.
-- **Repetição do mesmo kata pela mesma pessoa (memorização direta).** Se um
-  integrante resolvesse o mesmo kata nos dois tratamentos, o segundo trial
-  seria mais rápido apenas por já conhecer o problema — não pelo efeito da
-  IA. Mitigação estrutural do desenho: cada kata é resolvido **uma única
-  vez** por cada integrante (ver seção F).
+- **Repetição do mesmo kata pela mesma pessoa (efeito de aprendizado /
+  memorização direta) — ameaça aceita.** O desenho escolhido (seção F) faz
+  cada integrante resolver o mesmo kata duas vezes; o segundo trial tende a
+  ser mais rápido só por já conhecer o problema, não necessariamente pelo
+  efeito da IA. **Isso não é eliminado pelo desenho** — é mitigado apenas
+  parcialmente (ordem fixa com-ia → sem-ia, isolamento do slot do outro
+  tratamento no workspace) e deve ser declarado explicitamente na leitura
+  dos resultados de RQ1 no relatório final, especialmente se `sem-ia` for
+  sistematicamente mais rápido que o esperado.
 - **Familiaridade prévia com a ferramenta de IA.** Integrantes com mais
   experiência prévia no assistente escolhido podem ter vantagem
   independente do tratamento. Mitigação: registrar a experiência prévia de
@@ -100,7 +119,7 @@ recomendada pelo enunciado.
 - **Vazamento de solução já vista / memorização pelo modelo.** Katas muito
   conhecidos (clássicos de LeetCode/HackerRank) podem levar o assistente a
   reproduzir uma solução memorizada do treinamento, em vez de efetivamente
-  ajudar. Mitigação: os 6 katas são adaptações que invalidam a solução
+  ajudar. Mitigação: os 4 katas são adaptações que invalidam a solução
   canônica (detalhado em [`katas/README.md`](../katas/README.md)).
 - **Contaminação via indexação do workspace pelo Copilot.** Ameaça
   identificada durante a preparação (Passo 2): como o Copilot indexa os
@@ -113,25 +132,30 @@ recomendada pelo enunciado.
   within-subject: cada integrante passa pelos dois tratamentos, então é
   comparado contra si mesmo, não contra os outros dois integrantes.
 - **Dificuldade não perfeitamente idêntica entre katas.** A validação por
-  SLOC/complexidade ([`katas/README.md`](../katas/README.md)) aproxima os 6
-  katas, mas não os iguala exatamente (`ranking-liga` é o mais pesado).
-  Como o contrabalanceamento garante que cada kata apareça nos dois
-  tratamentos, essa diferença adiciona variância à medição, não viés
-  sistemático a favor de um tratamento.
+  SLOC/complexidade ([`katas/README.md`](../katas/README.md)) aproxima os 4
+  katas, mas não os iguala exatamente (`ranking-liga` é o mais pesado). No
+  desenho repetido isso pesa menos que no contrabalanceado, porque todo
+  integrante passa pelos 4 katas nos dois tratamentos — a diferença de
+  dificuldade entre katas afeta os dois lados do par igualmente.
 
 ## Métricas — justificativa da escolha
 
 - **RQ1:** time-to-green como métrica primária (mais direta e comparável
   entre katas do que contagem de interações); mediana em vez de média dado
-  N pequeno (6 trials/integrante) e sensibilidade da média a outliers.
+  N pequeno (8 trials/integrante) e sensibilidade da média a outliers. Ao
+  reportar RQ1, registrar também a ressalva do efeito de aprendizado
+  (seções F e H) — o resultado mede "com IA vs. sem IA na segunda
+  passagem pelo kata", não um contraste limpo entre tratamentos.
 - **RQ2:** taxa de sucesso como métrica primária (normaliza katas com
   números diferentes de testes de aceitação); nº absoluto de testes
   falhando como métrica complementar.
 - **RQ3:** complexidade ciclomática (Radon `cc`) e duplicação (jscpd),
   sempre acompanhadas de LOC/SLOC (Radon `raw`) como controle, já que
   código gerado por IA pode ser mais verboso. MI (Radon `mi`) como métrica
-  composta opcional.
+  composta opcional. RQ3 não sofre o mesmo viés de aprendizado que RQ1: a
+  estrutura do código final não é obviamente mais simples só por ser a
+  segunda tentativa.
 - **Análise estatística (Sprint 3):** mediana e IQR nas tabelas
   descritivas; teste de Wilcoxon (pareado, não paramétrico) na análise
-  inferencial, consistente com o desenho within-subject pareado por
-  integrante.
+  inferencial, pareado por (integrante, kata) — 12 pares no total,
+  consistente com o desenho within-subject repetido.
