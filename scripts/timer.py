@@ -12,18 +12,25 @@ Uso:
         --tratamento com-ia \
         --integrante gabriel
 
-Por padrão, o alvo de testes é ``katas/<kata>`` e o time-box é fixado em 35
-minutos. ``--interval-seconds`` e ``--timebox-seconds`` existem para testes do
-próprio script; em trials reais, mantenha o time-box padrão de 2100 s.
+Por padrão, o alvo de testes é ``katas/<kata>`` e o código avaliado é o do slot
+``katas/<kata>/solucoes/<integrante>/<tratamento>/`` — o script exporta
+``KATA_INTEGRANTE``/``KATA_TRATAMENTO`` para que ``katas/conftest.py`` publique
+esse slot no ``sys.path`` do pytest.
+
+O time-box é fixado em 35 minutos. ``--interval-seconds`` e
+``--timebox-seconds`` existem para testes do próprio script; em trials reais,
+mantenha o time-box padrão de 2100 s.
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import os
 import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from typing import Callable
 
@@ -51,7 +58,19 @@ class TrialResult:
         }
 
 
-def run_pytest(test_target: Path, timeout_seconds: float | None = None) -> bool:
+def trial_env(integrante: str, tratamento: str) -> dict[str, str]:
+    """Ambiente que diz a katas/conftest.py qual slot de solução testar."""
+    env = dict(os.environ)
+    env["KATA_INTEGRANTE"] = integrante
+    env["KATA_TRATAMENTO"] = tratamento
+    return env
+
+
+def run_pytest(
+    test_target: Path,
+    timeout_seconds: float | None = None,
+    env: dict[str, str] | None = None,
+) -> bool:
     """Executa pytest e retorna True somente quando toda a suíte passa."""
     cmd = [sys.executable, "-m", "pytest", str(test_target), "-q"]
     try:
@@ -61,6 +80,7 @@ def run_pytest(test_target: Path, timeout_seconds: float | None = None) -> bool:
             check=False,
             capture_output=True,
             text=True,
+            env=env,
         )
     except subprocess.TimeoutExpired:
         return False
@@ -195,6 +215,13 @@ def main() -> int:
     if not test_target.exists():
         parser.error(f"alvo de testes não existe: {test_target}")
 
+    slot = Path("katas") / args.kata / "solucoes" / args.integrante / args.tratamento
+    if args.tests is None and not slot.is_dir():
+        parser.error(
+            f"slot de solução não existe: {slot}. Confira --integrante e --tratamento; "
+            "cada kata tem um diretório por integrante/tratamento."
+        )
+
     if (
         not args.allow_duplicate
         and has_duplicate(args.out, args.integrante, args.kata, args.tratamento)
@@ -210,6 +237,7 @@ def main() -> int:
     print(f"Kata       : {args.kata}")
     print(f"Tratamento : {args.tratamento}")
     print(f"Testes     : {test_target}")
+    print(f"Solução    : {slot}")
     print(f"Time-box   : {args.timebox_seconds / 60:.2f} min")
     print("=" * 72, flush=True)
 
@@ -221,6 +249,9 @@ def main() -> int:
             test_target=test_target,
             timebox_seconds=args.timebox_seconds,
             interval_seconds=args.interval_seconds,
+            test_runner=partial(
+                run_pytest, env=trial_env(args.integrante, args.tratamento)
+            ),
         )
     except KeyboardInterrupt:
         print("\n[trial] interrompido manualmente; nenhum dado foi gravado.", file=sys.stderr)

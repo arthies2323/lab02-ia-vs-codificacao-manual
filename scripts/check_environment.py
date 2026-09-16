@@ -54,6 +54,10 @@ def check_duplication_tool() -> Check:
 def check_project_layout(root: Path) -> list[Check]:
     required = [
         root / "katas",
+        # Resolve solucoes/<integrante>/<tratamento> no sys.path do pytest;
+        # pytest.ini ancora a rootdir para que ele seja sempre carregado.
+        root / "katas" / "conftest.py",
+        root / "pytest.ini",
         root / "scripts" / "timer.py",
         root / "scripts" / "collect_static_metrics.py",
         root / "scripts" / "requirements.txt",
