@@ -35,8 +35,13 @@ Para o tratamento manual:
 python scripts/timer.py --kata agenda-turnos --tratamento sem-ia --integrante gabriel
 ```
 
-O alvo padrão dos testes é `katas/<kata>`. O script impede, por padrão, que a
-mesma combinação integrante/kata/tratamento seja registrada duas vezes.
+O alvo padrão dos testes é `katas/<kata>`, e o código avaliado é o do slot
+`katas/<kata>/solucoes/<integrante>/<tratamento>/` — o script exporta
+`KATA_INTEGRANTE`/`KATA_TRATAMENTO` para o pytest, e `katas/conftest.py` publica
+esse slot no `sys.path`. Se o slot não existir, o script recusa iniciar o trial.
+
+O script impede, por padrão, que a mesma combinação integrante/kata/tratamento
+seja registrada duas vezes.
 
 > Em trials reais, não altere `--timebox-seconds`: o padrão é 2100 segundos
 > (35 minutos), conforme o enunciado do laboratório.
@@ -91,12 +96,16 @@ mínima das Issues #3 e #4.
 
 ```bash
 python scripts/collect_static_metrics.py \
-  --path katas/agenda-turnos/solucao \
+  --path katas/agenda-turnos/solucoes/gabriel/com-ia \
   --kata agenda-turnos \
   --integrante gabriel \
   --tratamento com-ia \
   --out data/metrics.csv
 ```
+
+O `--path` é o slot do trial. Cada kata guarda 6 slots
+(`solucoes/<integrante>/<tratamento>/`), então a coleta mede apenas o código
+daquele integrante naquele tratamento.
 
 O CSV produzido contém as métricas previstas para a RQ3:
 
@@ -130,6 +139,6 @@ feat: implementar cronometro time-to-green dos trials (#3)
 test: validar ambiente e coleta de metricas estaticas (#4)
 ```
 
-A Sprint 1 não inclui a execução dos 18 trials nem a análise estatística. Esses
+A Sprint 1 não inclui a execução dos 12 trials nem a análise estatística. Esses
 dados devem ser produzidos apenas nas sprints posteriores, conforme o protocolo
 do laboratório.

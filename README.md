@@ -22,9 +22,11 @@ Disciplina: Laboratório de Experimentação de Software — PUC Minas (2026/2).
 
 - `docs/DESENHO_EXPERIMENTO.md`: hipóteses, variáveis, tratamentos, objetos
   experimentais, desenho, ameaças à validade (Passo 1).
-- `katas/`: os 6 katas escolhidos, cada um com enunciado e testes de aceitação
-  (Passo 2). Ver [`katas/README.md`](katas/README.md) para a validação de
-  dificuldade equivalente e o protocolo anti-contaminação da S02.
+- `katas/`: os 4 katas escolhidos, cada um com enunciado, testes de aceitação
+  (Passo 2), um `TEMPOS.md` de registro do tempo e 6 slots de solução
+  (`solucoes/<integrante>/<tratamento>/`) — um por integrante x tratamento. Ver
+  [`katas/README.md`](katas/README.md) para a validação de dificuldade
+  equivalente e o protocolo anti-contaminação da S02.
 - `scripts/`: scripts de cronometragem (time-to-green) e de coleta das
   métricas estáticas (Radon/jscpd) sobre o código final de cada trial.
 - `data/`: dados brutos coletados por trial (tempo, testes passando,
@@ -38,13 +40,16 @@ Disciplina: Laboratório de Experimentação de Software — PUC Minas (2026/2).
 python -m pip install -r scripts/requirements.txt
 ```
 
-Testes de aceitação de um kata:
+Testes de aceitação de um kata, para um trial específico:
 
 ```bash
-python -m pytest katas/<nome-do-kata>
+python -m pytest katas/<nome-do-kata> --integrante <nome> --tratamento com-ia
 ```
 
-Cronometragem de um trial:
+O par `--integrante`/`--tratamento` escolhe qual dos 6 slots de
+`katas/<nome-do-kata>/solucoes/` é testado.
+
+Cronometragem de um trial (roda o pytest no slot certo automaticamente):
 
 ```bash
 python scripts/timer.py --kata <nome-do-kata> --tratamento com-ia --integrante <nome>
@@ -53,8 +58,14 @@ python scripts/timer.py --kata <nome-do-kata> --tratamento com-ia --integrante <
 Coleta de métricas estáticas sobre a solução final de um trial:
 
 ```bash
-python scripts/collect_static_metrics.py --path katas/<nome-do-kata>/solucao --out data/metrics.csv
+python scripts/collect_static_metrics.py \
+  --path katas/<nome-do-kata>/solucoes/<nome>/com-ia \
+  --kata <nome-do-kata> --integrante <nome> --tratamento com-ia \
+  --out data/metrics.csv
 ```
+
+O tempo de cada trial também é anotado à mão em
+`katas/<nome-do-kata>/TEMPOS.md`, que fica na raiz de cada kata.
 
 ## Time-box
 

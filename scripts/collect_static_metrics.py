@@ -6,11 +6,14 @@ um trial, e acrescenta uma linha em um CSV consolidado.
 
 Uso:
     python scripts/collect_static_metrics.py \
-        --path katas/fizzbuzz-variante/solucao \
-        --kata fizzbuzz-variante \
+        --path katas/agenda-turnos/solucoes/arthur/com-ia \
+        --kata agenda-turnos \
         --integrante arthur \
         --tratamento com-ia \
         --out data/metrics.csv
+
+``--path`` aponta para o slot do trial, ``katas/<kata>/solucoes/<integrante>/<tratamento>``,
+para que as métricas descrevam só o código daquele trial.
 """
 from __future__ import annotations
 
