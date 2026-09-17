@@ -24,7 +24,7 @@ Regras de preenchimento:
 | arthur | com-ia | 2026-09-16 | 0.0094 | false | Claude Code (Claude Opus 5); 14/14 testes, green na 1ª submissão |
 | gabriel | sem-ia |  |  |  |  |
 | gabriel | com-ia |  |  |  |  |
-| pedro | sem-ia |  |  |  |  |
+| pedro | sem-ia | 2026-09-17 | 34.7500 | false | cronometrado pelo proprio integrante (34:45); 14/14 testes |
 | pedro | com-ia | 2026-09-16 | 0.3148 | false | agente autônomo (Claude Code); 14/14 testes, green na 1ª submissão |
 
 ## Métricas estáticas deste kata
