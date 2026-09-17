@@ -20,8 +20,8 @@ Regras de preenchimento:
 
 | integrante | tratamento | data | tempo (min) | censurado | observações |
 |---|---|---|---|---|---|
-| arthur | sem-ia |  |  |  |  |
-| arthur | com-ia |  |  |  |  |
+| arthur | sem-ia | 2026-09-17 | 35.0000 | true | cronômetro não foi iniciado a tempo (erro de processo, não de resultado); solução escrita manualmente sem timer rodando, duração real estimada ~40 min; 9/9 testes corretos ao final |
+| arthur | com-ia | 2026-09-16 | 0.0088 | false | Claude Code (Claude Opus 5); 9/9 testes, green na 1ª submissão |
 | gabriel | sem-ia |  |  |  |  |
 | gabriel | com-ia |  |  |  |  |
 | pedro | sem-ia |  |  |  |  |

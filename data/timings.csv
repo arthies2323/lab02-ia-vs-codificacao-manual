@@ -7,3 +7,7 @@ arthur,agenda-turnos,com-ia,0.0088,false
 arthur,compactar-serie,com-ia,0.0094,false
 arthur,fatura-progressiva,com-ia,0.0091,false
 arthur,ranking-liga,com-ia,0.0094,false
+arthur,agenda-turnos,sem-ia,35.0000,true
+arthur,compactar-serie,sem-ia,16.3044,false
+arthur,fatura-progressiva,sem-ia,15.0883,false
+arthur,ranking-liga,sem-ia,35.0000,true

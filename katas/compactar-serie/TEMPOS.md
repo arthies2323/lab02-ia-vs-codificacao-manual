@@ -20,8 +20,8 @@ Regras de preenchimento:
 
 | integrante | tratamento | data | tempo (min) | censurado | observações |
 |---|---|---|---|---|---|
-| arthur | sem-ia |  |  |  |  |
-| arthur | com-ia |  |  |  |  |
+| arthur | sem-ia | 2026-09-17 | 16.3044 | false | 14/14 testes |
+| arthur | com-ia | 2026-09-16 | 0.0094 | false | Claude Code (Claude Opus 5); 14/14 testes, green na 1ª submissão |
 | gabriel | sem-ia |  |  |  |  |
 | gabriel | com-ia |  |  |  |  |
 | pedro | sem-ia |  |  |  |  |
