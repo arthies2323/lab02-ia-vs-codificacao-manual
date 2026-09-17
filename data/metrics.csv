@@ -11,3 +11,7 @@ timestamp,integrante,kata,tratamento,loc,sloc,complexity_avg,mi_avg,duplication_
 2026-09-17T00:53:26.073181+00:00,arthur,compactar-serie,sem-ia,79,45,8.5,69.84175589781235,0.0
 2026-09-17T01:09:14.061505+00:00,arthur,fatura-progressiva,sem-ia,62,40,7.0,77.70917196469769,0.0
 2026-09-17T01:11:08.528011+00:00,arthur,ranking-liga,sem-ia,111,69,19.0,66.4704194385206,0.0
+2026-09-17T22:20:50.916429+00:00,pedro,compactar-serie,sem-ia,44,38,5.5,59.21843649237244,0.0
+2026-09-17T22:33:48.806651+00:00,pedro,agenda-turnos,sem-ia,49,40,4.0,43.85989368605411,0.0
+2026-09-17T22:33:51.008346+00:00,pedro,fatura-progressiva,sem-ia,29,26,8.0,50.35157483223068,0.0
+2026-09-17T22:33:53.194780+00:00,pedro,ranking-liga,sem-ia,90,78,7.5,33.55884464005129,0.0
