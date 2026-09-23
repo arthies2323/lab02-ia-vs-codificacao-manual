@@ -94,9 +94,14 @@ operacional: são elas que sustentam a validade do desenho repetido.
 **Ordem dos tratamentos: `sem-ia` antes de `com-ia`**, igual para todos os
 integrantes. A revisão do código gerado pelo agente (passo 5) expõe decisões
 concretas de implementação; realizá-la antes do trial manual daria ao
-participante pistas que a condição de controle deve não ter. Durante o trial,
-o slot do tratamento não corrente permanece fora do workspace aberto na IDE,
-o que também evita contaminação por indexação do Claude Code.
+participante pistas que a condição de controle deve não ter.
+
+Como a ordem faz a solução manual já existir quando o agente é acionado, cada
+tratamento é implementado em uma **branch separada**: no trial `com-ia` a
+solução manual daquele kata não está na árvore de trabalho, então não há o que
+o Claude Code indexe. A separação é garantida pelo versionamento, e não pela
+disciplina de quais arquivos ficam abertos na IDE. Como reforço, a spec
+entregue ao agente instrui explicitamente a não buscar implementações prontas.
 
 **Como isso neutraliza o efeito de aprendizado.** A spec é escrita uma vez por
 (integrante, kata) e seu tempo é cobrado dos **dois** tratamentos — embutido

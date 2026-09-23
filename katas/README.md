@@ -150,11 +150,17 @@ cuidado, o experimento se contamina de duas formas:
    Claude Code de B indexa as soluções de A.
 
 3. **O slot vizinho do próprio integrante.** Como os 6 slots convivem na mesma
-   árvore e o trial manual vem primeiro, a solução `sem-ia` já existe ao lado
-   da `com-ia` quando o agente é acionado. Se ela estiver no workspace aberto,
-   o assistente a indexa e o tratamento deixa de medir assistência para medir
-   cópia. Por isso o isolamento do slot é obrigatório: abra a pasta do slot
-   corrente, não a raiz do repositório.
+   árvore e o trial manual vem primeiro, a solução `sem-ia` já existiria ao
+   lado da `com-ia` quando o agente fosse acionado — e o assistente a indexaria,
+   fazendo o tratamento medir cópia em vez de assistência.
+
+   **Mitigação: os dois tratamentos são implementados em branches separadas.**
+   O trial `com-ia` roda em uma branch onde a solução manual daquele kata
+   simplesmente não existe na árvore de trabalho, de modo que não há o que
+   indexar — a separação é garantida pelo versionamento, não pela disciplina de
+   quais abas ficam abertas na IDE. Como reforço, a spec entregue ao agente
+   traz instrução explícita de não procurar implementações prontas, no
+   repositório ou fora dele.
 
 **Regras para a S02:**
 
@@ -165,11 +171,14 @@ cuidado, o experimento se contamina de duas formas:
 - Os testes de aceitação (`test_*.py`) não podem ser editados durante o trial.
 - O merge das branches de trials para a `main` só acontece quando todos os
   trials estiverem concluídos.
-- **Ordem dos tratamentos:** o trial `sem-ia` vem **antes** do `com-ia`, e os
-  slots do outro tratamento ficam fora do workspace aberto na IDE (abra a pasta
-  do slot, não a raiz do repositório). A revisão do código gerado pelo agente
-  expõe decisões de implementação; fazê-la antes do trial manual daria pistas
-  à condição de controle. Ver a decisão de desenho abaixo.
+- **Ordem dos tratamentos:** o trial `sem-ia` vem **antes** do `com-ia`. A
+  revisão do código gerado pelo agente expõe decisões de implementação; fazê-la
+  antes do trial manual daria pistas à condição de controle. Ver a decisão de
+  desenho abaixo.
+- **Uma branch por tratamento.** O trial `com-ia` roda em branch separada da do
+  trial `sem-ia`, para que a solução manual do mesmo kata não esteja na árvore
+  de trabalho enquanto o agente atua (ver item 3 acima). A spec entregue ao
+  agente instrui explicitamente a não buscar implementações prontas.
 - **Cada kata começa pela spec.** Antes de implementar, escreva um documento com
   design, abordagem, assinaturas e critérios de aceitação, cronometrando essa
   etapa. Ela é a entrada do agente no trial `com-ia` e entra no tempo dos dois

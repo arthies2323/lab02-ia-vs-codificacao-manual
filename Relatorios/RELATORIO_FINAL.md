@@ -187,6 +187,13 @@ pelo agente (passo 5) expõe decisões concretas de implementação, e realizá-
 antes do trial manual forneceria ao participante pistas que a condição manual
 deve, por definição, não ter. A ordem inversa contaminaria o braço de controle.
 
+**Isolamento entre tratamentos.** Cada tratamento é implementado em uma branch
+distinta. Assim, durante o trial `com-ia` a solução manual daquele kata não
+está presente na árvore de trabalho e não pode ser indexada pelo assistente —
+garantia dada pelo versionamento, e não pela disciplina de manter arquivos
+fechados no editor. A spec entregue ao agente inclui instrução explícita de não
+buscar implementações prontas.
+
 **Encerramento por time-box.** Um trial que não atinge green em 35 minutos é
 registrado com `tempo_min = 35.0000` e `censurado = true`, **não é descartado** e
 entra na análise como observação censurada. A contagem de testes passando
@@ -358,17 +365,22 @@ ponto central: no desenho repetido convencional, a segunda passagem herda tudo o
 que a pessoa aprendeu na primeira; aqui, o que a segunda passagem consome é um
 documento anterior à primeira.
 
-**Terceiro, a ordem protege o braço de controle e a exposição ao código gerado é
-posterior ao cronômetro.** Executar o trial manual primeiro garante que a
-condição de controle ocorra sem qualquer exposição a código gerado para aquele
-kata. A revisão da solução do agente (passo 5) acontece depois da parada do
-cronômetro, e o slot do tratamento não corrente permanece fora do workspace
-aberto na IDE durante o trial — o que cumpre também a função de impedir
-contaminação por indexação do workspace pelo próprio Claude Code. Some-se a isso
-que, nestes katas de escopo fechado, o agente executou a implementação
-integralmente a partir da spec na maioria dos trials: do ponto de vista do
-participante a etapa é **opaca**, ele especifica e recebe um resultado verificado
-por testes, sem percorrer as decisões de implementação linha a linha.
+**Terceiro, a ordem protege o braço de controle, e a separação por branches
+impede o vazamento na direção oposta.** Executar o trial manual primeiro
+garante que a condição de controle ocorra sem qualquer exposição a código
+gerado para aquele kata. O risco simétrico — o agente indexar a solução manual,
+já existente naquele ponto, e devolvê-la como se fosse produção própria — é
+tratado implementando cada tratamento em uma **branch separada**: durante o
+trial `com-ia`, a solução manual daquele kata não está na árvore de trabalho,
+de modo que não há o que indexar. A garantia é dada pelo versionamento, não
+pela disciplina de quais arquivos permanecem abertos no editor, e a spec
+entregue ao agente reforça a instrução de não buscar implementações prontas. A
+revisão da solução do agente (passo 5) ocorre sempre após a parada do
+cronômetro. Some-se a isso que, nestes katas de escopo fechado, o agente
+executou a implementação integralmente a partir da spec na maioria dos trials:
+do ponto de vista do participante a etapa é **opaca**, ele especifica e recebe
+um resultado verificado por testes, sem percorrer as decisões de implementação
+linha a linha.
 
 **Limite honesto do argumento.** As três medidas reduzem substancialmente o
 efeito, mas não o eliminam. Um participante que resolveu um kata manualmente
@@ -385,6 +397,7 @@ magnitude desconhecida e direção dependente de sorteio.
 |---|---|
 | Memorização do kata pelo modelo | Adaptações que invalidam a solução canônica (Seção 2.2) |
 | Contaminação entre integrantes via indexação do workspace | Branch por integrante a partir da tag `katas-v1`; nenhum `pull` da branch de outro antes de concluir os próprios trials |
+| Agente indexar a solução manual do próprio participante | Branch separada por tratamento: no trial `com-ia` a solução manual do kata não está na árvore de trabalho; a spec instrui a não buscar implementações prontas |
 | Variação individual de habilidade | Desenho within-subject: cada integrante é comparado consigo mesmo |
 | Dificuldade não idêntica entre katas | Eliminada dentro do par pelo desenho repetido (Seção 2.8.2) |
 | Familiaridade prévia com o assistente | Registrada por integrante e reportada na Seção 4 |
