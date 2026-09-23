@@ -474,6 +474,23 @@ esperado, não uma medição nula: o jscpd exige um bloco mínimo de ~50 tokens
 para reconhecer uma duplicata, e as soluções dos katas são pequenas demais
 para atingir esse limiar mesmo quando há repetição de lógica.
 
+### 3.4 RQ1 (exploratória) — número de prompts/interações
+
+Métrica opcional, citada no enunciado como exploratória, não obrigatória.
+**Autorrelato dos três integrantes, não instrumentado**: nenhum log de
+prompt é gerado ou versionado pelo protocolo (Seção 2.6), então este número
+não tem o mesmo nível de evidência que os dados de `timings.csv`/`metrics.csv`.
+
+Segundo relato dos três integrantes, cada um resolveu cada um dos 4 katas do
+tratamento `com-ia` com **1 único prompt** — a spec produzida no passo 2 do
+protocolo (Seção 2.4) foi suficiente para o agente entregar a solução
+completa e correta na primeira submissão, sem rodada de correção. Isso é
+consistente com a taxa de sucesso de 100% observada em todos os pares
+`com-ia` na Seção 3.2, e sugere que, para katas deste porte (SLOC 21–48,
+Seção 2.2), o ponto de atrito do tratamento manual não é apenas a digitação,
+mas a fase de projeto da solução — que a spec, no tratamento `com-ia`,
+resolve antes mesmo de o agente ser acionado.
+
 ## 4. Discussão
 
 > A ser preenchido — Issue #24. Os números acima (Seção 3) já dão a base
