@@ -124,12 +124,11 @@ soluções de referência usam apenas a biblioteca padrão e nenhuma estrutura d
 dados além de listas e dicionários.
 
 **Ressalva a registrar no relatório:** `ranking-liga` é o kata mais pesado
-(48 SLOC, CC total 18, ~2x o mais leve). Como o desenho é contrabalanceado e
-cada kata é resolvido nos dois tratamentos ao longo do trio, uma diferença de
-dificuldade entre katas adiciona **variância**, não viés na comparação entre
-tratamentos — desde que a ordem de contrabalanceamento garanta que cada kata
-apareça sob os dois tratamentos. Isso é uma restrição para o desenho do
-experimento (issue #1).
+(48 SLOC, CC total 18, ~2x o mais leve). Foi justamente essa dispersão que
+motivou o desenho repetido: como cada integrante resolve o **mesmo** kata nos
+dois tratamentos, a dificuldade do kata é constante dentro do par e some na
+comparação pareada, em vez de entrar no contraste entre tratamentos. No
+desenho contrabalanceado ela seria viés, não apenas variância.
 
 A `CC média` é sensível ao número de funções extraídas, que é escolha de estilo
 de quem resolve; para comparar katas, `CC total` e `SLOC` são os indicadores
@@ -151,10 +150,11 @@ cuidado, o experimento se contamina de duas formas:
    Claude Code de B indexa as soluções de A.
 
 3. **O slot vizinho do próprio integrante.** Como os 6 slots convivem na mesma
-   árvore, a solução `sem-ia` de um kata fica ao lado da `com-ia` do mesmo
-   integrante. Se o trial manual vier primeiro, o assistente indexa a resposta
-   pronta no trial seguinte — e o tratamento deixa de medir assistência e passa
-   a medir cópia.
+   árvore e o trial manual vem primeiro, a solução `sem-ia` já existe ao lado
+   da `com-ia` quando o agente é acionado. Se ela estiver no workspace aberto,
+   o assistente a indexa e o tratamento deixa de medir assistência para medir
+   cópia. Por isso o isolamento do slot é obrigatório: abra a pasta do slot
+   corrente, não a raiz do repositório.
 
 **Regras para a S02:**
 
@@ -165,11 +165,16 @@ cuidado, o experimento se contamina de duas formas:
 - Os testes de aceitação (`test_*.py`) não podem ser editados durante o trial.
 - O merge das branches de trials para a `main` só acontece quando todos os
   trials estiverem concluídos.
-- **Se o mesmo integrante resolver o mesmo kata nos dois tratamentos**, o trial
-  `com-ia` vem **antes** do `sem-ia` e os slots do outro tratamento ficam fora
-  do workspace aberto na IDE (abra a pasta do slot, não a raiz do repositório).
-  A ordem inversa contamina o `com-ia`; nenhuma ordem elimina o efeito de
-  aprendizado — ver a ressalva abaixo.
+- **Ordem dos tratamentos:** o trial `sem-ia` vem **antes** do `com-ia`, e os
+  slots do outro tratamento ficam fora do workspace aberto na IDE (abra a pasta
+  do slot, não a raiz do repositório). A revisão do código gerado pelo agente
+  expõe decisões de implementação; fazê-la antes do trial manual daria pistas
+  à condição de controle. Ver a decisão de desenho abaixo.
+- **Cada kata começa pela spec.** Antes de implementar, escreva um documento com
+  design, abordagem, assinaturas e critérios de aceitação, cronometrando essa
+  etapa. Ela é a entrada do agente no trial `com-ia` e entra no tempo dos dois
+  tratamentos — no `sem-ia` já dentro do cronômetro, no `com-ia` somada depois,
+  porque a spec precede o acionamento do agente.
 
 ### Decisão de desenho: o mesmo kata nos dois tratamentos
 
@@ -179,17 +184,26 @@ repetido**, formalizado em
 [`docs/DESENHO_EXPERIMENTO.md`](../docs/DESENHO_EXPERIMENTO.md#f-tipo-de-projeto-experimental):
 
 - **Repetido (24 trials) — escolhido.** Cada integrante resolve os 4 katas
-  duas vezes, uma em cada tratamento (8 trials por integrante). Dobra o N em
-  relação ao contrabalanceado, mas introduz **efeito de aprendizado**: a
-  segunda passagem pelo mesmo kata é mais rápida por já conhecer o problema,
-  não necessariamente pelo tratamento. O ganho medido em RQ1 fica confundido
-  com a ordem, e o time-box de 35 min não protege contra isso — por isso é
-  **obrigatório** declarar essa ameaça na leitura de RQ1 no relatório final.
+  duas vezes, uma em cada tratamento (8 trials por integrante). Dobra o N e,
+  principalmente, neutraliza a diferença de dificuldade entre katas: como cada
+  kata aparece nos **dois lados do par**, sua dificuldade intrínseca vira uma
+  constante dentro do par. Isso importa porque katas de dificuldade
+  classificada como equivalente custam tempos bem diferentes na prática — a
+  descoberta de um invariante não óbvio ou acontece rápido ou consome o
+  time-box inteiro, quase sem valores intermediários.
 - **Contrabalanceado (12 trials) — não usado.** Cada integrante resolveria
   cada kata uma única vez (metade com IA, metade sem), com cada kata
   aparecendo nos dois tratamentos ao longo do trio. Evitaria o efeito de
-  aprendizado, ao custo de menos dados por integrante.
+  aprendizado, mas jogaria a diferença de dificuldade entre katas direto no
+  contraste entre tratamentos, com direção dependente do sorteio.
 
-**Regra obrigatória por causa da escolha acima:** a ordem é sempre `com-ia`
-primeiro, depois `sem-ia`, igual para todo mundo — é a regra já listada
-acima em "Regras para a S02".
+**Por que o desenho repetido não invalida a RQ1.** O efeito de aprendizado é
+atacado pelo protocolo, não ignorado: a spec é escrita uma vez e cobrada dos
+dois tratamentos, então o segundo trial não herda de graça a etapa de
+compreensão e projeto; e como a spec é congelada antes da implementação manual
+e é a única entrada do agente, o que o participante aprendeu implementando à
+mão não alcança o trial com IA. Some-se a ordem fixa `sem-ia` → `com-ia`, que
+mantém a condição de controle livre de qualquer exposição a código gerado.
+
+Resta uma parcela residual — familiaridade com o problema — que o grupo trata
+como **ameaça aceita e declarada** na leitura de RQ1 do relatório final.

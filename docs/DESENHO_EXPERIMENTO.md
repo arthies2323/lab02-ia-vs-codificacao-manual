@@ -32,7 +32,7 @@ time-boxed).
 
 | RQ  | Variável            | Métrica                                                                                    |
 |-----|----------------------|----------------------------------------------------------------------------------------------|
-| RQ1 | Tempo de resolução   | Time-to-green (min), coletado por [`scripts/timer.py`](../scripts/timer.py); censurado em 35 min se não passar. Agregação: mediana por tratamento. |
+| RQ1 | Tempo de resolução   | Tempo total do ciclo de resolução (min) = confecção da spec + time-to-green medido por [`scripts/timer.py`](../scripts/timer.py); censurado em 35 min se não passar. Agregação: mediana por tratamento. Ver "Protocolo de execução de um trial" abaixo. |
 | RQ2 | Defeitos             | Taxa de sucesso (% testes passando); nº absoluto de testes falhando ao final do time-box.    |
 | RQ3 | Estrutura do código  | Complexidade ciclomática média e LOC/SLOC (Radon), duplicação (jscpd), coletados por [`scripts/collect_static_metrics.py`](../scripts/collect_static_metrics.py); MI (Radon `mi`) como métrica composta opcional. |
 
@@ -70,24 +70,46 @@ integrante). Essa é uma revisão do desenho original — a alternativa
 contrabalanceada (cada kata resolvido uma única vez por pessoa, com a
 atribuição de tratamento combinada entre os três) foi considerada e está
 descrita, junto com o trade-off entre as duas, em
-[`katas/README.md`](../katas/README.md#L174) ("Ressalva de desenho"). O
-grupo optou pelo desenho repetido para dobrar o N por integrante; a
-contrapartida é o efeito de aprendizado descrito na seção H, que passa a ser
-uma ameaça **aceita e declarada**, não eliminada pelo desenho.
+[`katas/README.md`](../katas/README.md) ("Decisão de desenho"). O grupo optou
+pelo desenho repetido por duas razões: dobrar o N por integrante e, sobretudo,
+neutralizar a diferença de dificuldade entre katas, que no desenho
+contrabalanceado entraria diretamente no contraste entre tratamentos. No
+desenho repetido cada kata aparece nos dois lados do par, e sua dificuldade
+intrínseca é eliminada por construção.
 
-Mitigação parcial obrigatória (protocolo em
-[`katas/README.md`](../katas/README.md)): a ordem é sempre **com-ia antes de
-sem-ia** para todos os integrantes, e o slot do outro tratamento fica fora
-do workspace aberto na IDE durante o trial, para não contaminar via
-indexação do Claude Code. Isso não remove o efeito de aprendizado sobre o
-tempo (RQ1) — só evita que o assistente "veja" a resposta pronta do outro
-tratamento.
+### Protocolo de execução de um trial
+
+A ordem e a separação de fases abaixo são parte do desenho, não detalhe
+operacional: são elas que sustentam a validade do desenho repetido.
+
+1. **Leitura** do enunciado e dos testes de aceitação.
+2. **Confecção da spec (cronometrada):** o participante escreve um documento
+   com design, abordagem, assinaturas das funções e critérios de aceitação.
+3. **Execução:** é o único passo em que os tratamentos divergem. No `sem-ia`
+   o participante implementa à mão; no `com-ia` a spec do passo 2 é a entrada
+   do agente, que executa a implementação.
+4. **Verificação:** green ou time-box de 35 min, o que vier primeiro.
+5. **Revisão** do código produzido, sempre **após** a parada do cronômetro.
+
+**Ordem dos tratamentos: `sem-ia` antes de `com-ia`**, igual para todos os
+integrantes. A revisão do código gerado pelo agente (passo 5) expõe decisões
+concretas de implementação; realizá-la antes do trial manual daria ao
+participante pistas que a condição de controle deve não ter. Durante o trial,
+o slot do tratamento não corrente permanece fora do workspace aberto na IDE,
+o que também evita contaminação por indexação do Claude Code.
+
+**Como isso neutraliza o efeito de aprendizado.** A spec é escrita uma vez por
+(integrante, kata) e seu tempo é cobrado dos **dois** tratamentos — embutido
+no trial manual e somado explicitamente ao trial com IA. Duas consequências:
+(i) o segundo trial não herda de graça a etapa de compreensão e projeto, que é
+onde o aprendizado de fato ocorre; e (ii) como a spec é congelada antes da
+implementação manual e é a única entrada do agente, o que o participante
+aprendeu implementando à mão não alcança o trial seguinte. Resta uma parcela
+residual de familiaridade com o problema, tratada na seção H como ameaça
+aceita e declarada.
 
 A comparação estatística (Sprint 3) é pareada por (integrante, kata): tempo
-com IA vs. tempo sem IA do mesmo par pessoa+kata. É um pareamento mais
-direto que o do desenho contrabalanceado, mas o resultado da RQ1
-especificamente precisa ser lido com a ressalva do efeito de aprendizado
-registrada no relatório final.
+com IA vs. tempo sem IA do mesmo par pessoa+kata.
 
 ## (G) Quantidade de medições
 
@@ -102,13 +124,14 @@ sem IA), ou seja 8 trials por integrante (4 por tratamento).
   integrantes.
 - **Repetição do mesmo kata pela mesma pessoa (efeito de aprendizado /
   memorização direta) — ameaça aceita.** O desenho escolhido (seção F) faz
-  cada integrante resolver o mesmo kata duas vezes; o segundo trial tende a
-  ser mais rápido só por já conhecer o problema, não necessariamente pelo
-  efeito da IA. **Isso não é eliminado pelo desenho** — é mitigado apenas
-  parcialmente (ordem fixa com-ia → sem-ia, isolamento do slot do outro
-  tratamento no workspace) e deve ser declarado explicitamente na leitura
-  dos resultados de RQ1 no relatório final, especialmente se `sem-ia` for
-  sistematicamente mais rápido que o esperado.
+  cada integrante resolver o mesmo kata duas vezes; em tese o segundo trial
+  tende a ser mais rápido só por já conhecer o problema, não necessariamente
+  pelo efeito da IA. O protocolo da seção F reduz substancialmente esse
+  efeito — spec cobrada dos dois tratamentos e congelada antes da
+  implementação manual, ordem fixa `sem-ia` → `com-ia`, isolamento do slot do
+  outro tratamento no workspace — mas **não o elimina**: resta a familiaridade
+  do participante com o problema. Deve ser declarado explicitamente na leitura
+  dos resultados de RQ1 no relatório final.
 - **Familiaridade prévia com a ferramenta de IA.** Integrantes com mais
   experiência prévia no assistente escolhido podem ter vantagem
   independente do tratamento. Mitigação: registrar a experiência prévia de
