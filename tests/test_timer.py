@@ -29,11 +29,12 @@ def test_green_registra_tempo_real() -> None:
     clock = FakeClock()
     calls = 0
 
-    def runner(_target: Path, _remaining: float | None) -> bool:
+    def runner(_target: Path, _remaining: float | None) -> "timer.PytestOutcome":
         nonlocal calls
         calls += 1
         clock.value += 1.0  # custo da execução dos testes
-        return calls == 3
+        green = calls == 3
+        return timer.PytestOutcome(green=green, passando=9 if green else 4)
 
     result = timer.run_trial(
         integrante="gabriel",
@@ -49,14 +50,15 @@ def test_green_registra_tempo_real() -> None:
 
     assert result.censurado is False
     assert result.elapsed_seconds == 7.0
+    assert result.testes_passando == 9
 
 
 def test_timebox_registra_censura_no_limite_exato() -> None:
     clock = FakeClock()
 
-    def runner(_target: Path, _remaining: float | None) -> bool:
+    def runner(_target: Path, _remaining: float | None) -> "timer.PytestOutcome":
         clock.value += 1.0
-        return False
+        return timer.PytestOutcome(green=False, passando=2)
 
     result = timer.run_trial(
         integrante="gabriel",
@@ -72,6 +74,8 @@ def test_timebox_registra_censura_no_limite_exato() -> None:
 
     assert result.censurado is True
     assert result.elapsed_seconds == 5
+    # No encerramento por time-box vale a última contagem observada, não o green.
+    assert result.testes_passando == 2
 
 
 def test_append_result_cria_csv_compativel_com_data_readme(tmp_path: Path) -> None:

@@ -20,11 +20,11 @@ Regras de preenchimento:
 
 | integrante | tratamento | data | tempo (min) | censurado | observações |
 |---|---|---|---|---|---|
-| arthur | sem-ia | 2026-09-17 | 35.0000 | true | cronômetro não foi iniciado a tempo (erro de processo, não de resultado); solução escrita manualmente sem timer rodando, duração real estimada ~40 min; 9/9 testes corretos ao final |
+| arthur | sem-ia | 2026-09-17 | 35.0000 | true | sem green no time-box: 0 testes passando aos 35 min (relatado pelo grupo, sem captura do cronômetro — o timer não chegou a ser iniciado); duração real até o green estimada em ~40 min |
 | arthur | com-ia | 2026-09-16 | 0.0088 | false | Claude Code (Claude Opus 5); 9/9 testes, green na 1ª submissão |
 | gabriel | sem-ia |  |  |  |  |
 | gabriel | com-ia |  |  |  |  |
-| pedro | sem-ia | 2026-09-17 | 35.0000 | true | sem green dentro do time-box; cronometrado pelo próprio integrante, duração real 45:29; 9/9 testes corretos ao final |
+| pedro | sem-ia | 2026-09-17 | 35.0000 | true | sem green no time-box: 0 testes passando aos 35 min (código ainda não executável); duração real até o green 45:29 |
 | pedro | com-ia | 2026-09-16 | 0.4066 | false | agente autônomo (Claude Code); 9/9 testes, green na 1ª submissão |
 
 ## Métricas estáticas deste kata

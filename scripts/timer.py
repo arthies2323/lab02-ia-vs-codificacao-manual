@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import re
 import subprocess
 import sys
 import time
@@ -36,7 +37,25 @@ from typing import Callable
 
 TIMEBOX_SECONDS = 35 * 60
 DEFAULT_INTERVAL_SECONDS = 5.0
-CSV_COLUMNS = ["integrante", "kata", "tratamento", "tempo_min", "censurado"]
+CSV_COLUMNS = [
+    "integrante",
+    "kata",
+    "tratamento",
+    "tempo_min",
+    "censurado",
+    "testes_passando",
+]
+
+# Resumo do pytest em modo -q: "9 failed in 0.16s", "2 passed, 7 failed in 0.1s".
+PASSED_RE = re.compile(r"(\d+) passed")
+
+
+@dataclass(frozen=True)
+class PytestOutcome:
+    """Resultado de um ciclo de execução da suíte."""
+
+    green: bool
+    passando: int | None
 
 
 @dataclass(frozen=True)
@@ -46,6 +65,7 @@ class TrialResult:
     tratamento: str
     elapsed_seconds: float
     censurado: bool
+    testes_passando: int | None = None
 
     def as_csv_row(self) -> dict[str, str]:
         tempo_min = self.elapsed_seconds / 60
@@ -53,8 +73,13 @@ class TrialResult:
             "integrante": self.integrante,
             "kata": self.kata,
             "tratamento": self.tratamento,
+            # Nos trials com-ia, o tempo de confecção da spec é cronometrado à
+            # parte pelo participante e somado a este valor depois, porque a
+            # spec é escrita antes de o agente (e o cronômetro) entrarem em ação.
             "tempo_min": f"{tempo_min:.4f}",
             "censurado": "true" if self.censurado else "false",
+            # Vazio significa "não capturado", que é diferente de zero.
+            "testes_passando": "" if self.testes_passando is None else str(self.testes_passando),
         }
 
 
@@ -70,8 +95,8 @@ def run_pytest(
     test_target: Path,
     timeout_seconds: float | None = None,
     env: dict[str, str] | None = None,
-) -> bool:
-    """Executa pytest e retorna True somente quando toda a suíte passa."""
+) -> PytestOutcome:
+    """Executa pytest e devolve se houve green e quantos testes passaram."""
     cmd = [sys.executable, "-m", "pytest", str(test_target), "-q"]
     try:
         completed = subprocess.run(
@@ -83,14 +108,17 @@ def run_pytest(
             env=env,
         )
     except subprocess.TimeoutExpired:
-        return False
+        return PytestOutcome(green=False, passando=None)
 
     output = "\n".join(part for part in (completed.stdout, completed.stderr) if part).strip()
     if completed.returncode != 0 and output:
         # Evita inundar o terminal a cada ciclo, mas preserva o resumo do pytest.
         tail = [line for line in output.splitlines() if line.strip()][-3:]
         print("[pytest] " + " | ".join(tail), flush=True)
-    return completed.returncode == 0
+
+    encontrado = PASSED_RE.search(output)
+    passando = int(encontrado.group(1)) if encontrado else (0 if output else None)
+    return PytestOutcome(green=completed.returncode == 0, passando=passando)
 
 
 def has_duplicate(out_path: Path, integrante: str, kata: str, tratamento: str) -> bool:
@@ -132,17 +160,20 @@ def run_trial(
     interval_seconds: float = DEFAULT_INTERVAL_SECONDS,
     now: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
-    test_runner: Callable[[Path, float | None], bool] = run_pytest,
+    test_runner: Callable[[Path, float | None], PytestOutcome] = run_pytest,
 ) -> TrialResult:
     """Executa o ciclo de medição até green ou até o limite do time-box."""
     started_at = now()
     attempt = 0
+    # Última contagem observada: no encerramento por time-box, é ela que
+    # descreve o estado da solução no minuto 35 (dado da RQ2).
+    passando = None
 
     while True:
         elapsed_before_test = now() - started_at
         remaining = timebox_seconds - elapsed_before_test
         if remaining <= 0:
-            return TrialResult(integrante, kata, tratamento, timebox_seconds, True)
+            return TrialResult(integrante, kata, tratamento, timebox_seconds, True, passando)
 
         attempt += 1
         print(
@@ -151,15 +182,19 @@ def run_trial(
             flush=True,
         )
 
-        green = test_runner(test_target, remaining)
+        outcome = test_runner(test_target, remaining)
+        if outcome.passando is not None:
+            passando = outcome.passando
         elapsed_after_test = now() - started_at
 
         # Green só é válido quando obtido dentro do limite experimental.
-        if green and elapsed_after_test <= timebox_seconds:
-            return TrialResult(integrante, kata, tratamento, elapsed_after_test, False)
+        if outcome.green and elapsed_after_test <= timebox_seconds:
+            return TrialResult(
+                integrante, kata, tratamento, elapsed_after_test, False, passando
+            )
 
         if elapsed_after_test >= timebox_seconds:
-            return TrialResult(integrante, kata, tratamento, timebox_seconds, True)
+            return TrialResult(integrante, kata, tratamento, timebox_seconds, True, passando)
 
         wait_for = min(interval_seconds, timebox_seconds - elapsed_after_test)
         if wait_for > 0:
@@ -261,6 +296,11 @@ def main() -> int:
 
     if result.censurado:
         print(f"[trial] time-box atingido. Registrado como censurado em {args.timebox_seconds / 60:.2f} min.")
+        passando = result.testes_passando
+        print(
+            "[trial] testes passando no time-box: "
+            + ("não capturado" if passando is None else str(passando))
+        )
     else:
         print(f"[trial] GREEN em {result.elapsed_seconds / 60:.4f} min.")
     print(f"[trial] resultado salvo em: {args.out}")
