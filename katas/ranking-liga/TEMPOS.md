@@ -22,8 +22,8 @@ Regras de preenchimento:
 |---|---|---|---|---|---|
 | arthur | sem-ia | 2026-09-17 | 35.0000 | true | sem green no time-box: 0 testes passando aos 35 min (relatado pelo grupo, sem captura do cronômetro — o timer não chegou a ser iniciado); duração real até o green estimada em ~1h30 |
 | arthur | com-ia | 2026-09-16 | 0.0094 | false | Claude Code (Claude Opus 5); 9/9 testes, green na 1ª submissão |
-| gabriel | sem-ia |  |  |  |  |
-| gabriel | com-ia |  |  |  |  |
+| gabriel | sem-ia | 2026-09-17 | 35.0000 | true | sem captura do cronômetro (relatado pelo grupo); duração real estimada em ~94 min, por comparação com o trial do arthur (mesmo kata, +4 min) |
+| gabriel | com-ia | 2026-09-17 | 12.0167 | false | Claude Code (Claude Opus 5); 9/9 testes |
 | pedro | sem-ia | 2026-09-17 | 35.0000 | true | sem green no time-box: 0 testes passando aos 35 min (código ainda não executável); duração real até o green 1:11:23 |
 | pedro | com-ia | 2026-09-16 | 0.5321 | false | agente autônomo (Claude Code); 9/9 testes, green na 1ª submissão |
 

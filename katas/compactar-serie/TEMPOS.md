@@ -22,8 +22,8 @@ Regras de preenchimento:
 |---|---|---|---|---|---|
 | arthur | sem-ia | 2026-09-17 | 16.3044 | false | 14/14 testes |
 | arthur | com-ia | 2026-09-16 | 0.0094 | false | Claude Code (Claude Opus 5); 14/14 testes, green na 1ª submissão |
-| gabriel | sem-ia |  |  |  |  |
-| gabriel | com-ia |  |  |  |  |
+| gabriel | sem-ia | 2026-09-17 | 11.3000 | false | 14/14 testes; por comparação com o trial do arthur (mesmo kata, -5 min), autorrelato |
+| gabriel | com-ia | 2026-09-17 | 7.5000 | false | Claude Code (Claude Opus 5); 14/14 testes |
 | pedro | sem-ia | 2026-09-17 | 34.7500 | false | cronometrado pelo proprio integrante (34:45); 14/14 testes |
 | pedro | com-ia | 2026-09-16 | 0.3148 | false | agente autônomo (Claude Code); 14/14 testes, green na 1ª submissão |
 
