@@ -15,3 +15,11 @@ pedro,compactar-serie,sem-ia,34.7500,false,14
 pedro,fatura-progressiva,sem-ia,28.9500,false,9
 pedro,agenda-turnos,sem-ia,35.0000,true,0
 pedro,ranking-liga,sem-ia,35.0000,true,0
+gabriel,agenda-turnos,com-ia,4.9167,false,9
+gabriel,compactar-serie,com-ia,7.5000,false,14
+gabriel,fatura-progressiva,com-ia,8.2000,false,9
+gabriel,ranking-liga,com-ia,12.0167,false,9
+gabriel,agenda-turnos,sem-ia,35.0000,true,0
+gabriel,compactar-serie,sem-ia,11.3000,false,14
+gabriel,fatura-progressiva,sem-ia,21.0833,false,9
+gabriel,ranking-liga,sem-ia,35.0000,true,0
