@@ -418,19 +418,17 @@ definida para todos os trials independentemente do censuramento.
 ## 3. Resultados
 
 Gerados por [`scripts/analyze_results.py`](../scripts/analyze_results.py) sobre
-`data/timings.csv` e `data/metrics.csv`. **N = 8 pares (integrante, kata)** —
-arthur e pedro, 4 katas cada; os pares de gabriel (issues #18/#19) ainda não
-têm tempo/métricas coletados, então não entram nesta rodada. A tabela é
-reexecutável assim que esses dados existirem — basta rodar o script de novo.
+`data/timings.csv` e `data/metrics.csv`. **N = 12 pares (integrante, kata)** —
+os 3 integrantes completos, 4 katas cada, conforme o desenho (Seção 2.1).
 
 ### 3.1 RQ1 — Tempo de resolução
 
 | tratamento | mediana (min) | IQR |
 |---|---|---|
-| com-ia | 8.02 | [5.75, 9.86] |
-| sem-ia | 34.88 | [25.79, 35.00] |
+| com-ia | 7.85 | [5.75, 9.86] |
+| sem-ia | 34.88 | [19.89, 35.00] |
 
-Wilcoxon pareado: estatística = 0.0, **p = 0.0078** — diferença estatisticamente
+Wilcoxon pareado: estatística = 0.0, **p = 0.0005** — diferença estatisticamente
 significativa, com `com-ia` menor. Sem outliers pela regra do IQR (1.5×) em
 nenhum dos dois tratamentos.
 
@@ -441,33 +439,36 @@ nenhum dos dois tratamentos.
 | com-ia | 1.00 | [1.00, 1.00] |
 | sem-ia | 0.50 | [0.00, 1.00] |
 
-Wilcoxon pareado: estatística = 0.0, **p = 0.125** — não significativo a 5%.
-Dos 8 pares, 4 têm diferença zero (`com-ia` e `sem-ia` ambos com taxa 1.0) e
-são descartados pelo método padrão do teste (`zero_method="wilcox"`); dos 4
-pares restantes, **os 4** favorecem `com-ia` (sem-ia = 0, censurado sem
-nenhum teste passando). Com N efetivo de 4 pares informativos, o p-valor
-mínimo alcançável pelo teste exato é 0.125 — a direção do efeito é
-unânime nos dados disponíveis, mas a amostra é pequena demais para
-significância formal.
+Wilcoxon pareado: estatística = 0.0, **p = 0.0312** — diferença estatisticamente
+significativa, com `com-ia` maior. Dos 12 pares, 6 têm diferença zero
+(`com-ia` e `sem-ia` ambos com taxa 1.0) e são descartados pelo método padrão
+do teste (`zero_method="wilcox"`); dos 6 pares restantes, **os 6** favorecem
+`com-ia` (sem-ia = 0, censurado sem nenhum teste passando). Com N efetivo de
+6 pares informativos, todos na mesma direção, o teste exato atinge
+significância a 5% (p = 2×0,5⁶ = 0,03125).
 
 ### 3.3 RQ3 — Estrutura do código
 
 | métrica | com-ia (mediana, IQR) | sem-ia (mediana, IQR) | Wilcoxon (estat., p) |
 |---|---|---|---|
-| Complexidade ciclomática média | 4.83 [3.38, 7.50] | 7.25 [5.21, 8.13] | 3.0, p=0.078 |
+| Complexidade ciclomática média | 5.83 [4.10, 7.50] | 8.25 [6.63, 10.50] | 3.5, **p=0.0117** |
 | Duplicação (%) | 0.0 [0.0, 0.0] | 0.0 [0.0, 0.0] | sem variação — teste não aplicável |
-| Maintainability Index | 53.94 [48.38, 62.37] | 62.84 [48.73, 71.35] | 18.0, p=1.000 |
-| SLOC (controle) | 36.50 [30.75, 41.50] | 42.50 [39.50, 55.50] | 0.0, **p=0.0156** |
+| Maintainability Index | 49.92 [45.27, 58.04] | 50.36 [42.98, 67.31] | 36.0, p=0.8501 |
+| SLOC (controle) | 38.50 [32.50, 48.00] | 43.50 [39.50, 53.00] | 4.0, **p=0.0137** |
 
-Nenhuma das métricas de RQ3 atinge significância a 5%, exceto o **controle**
-(SLOC): o código `com-ia` é sistematicamente mais curto que o `sem-ia` nesta
-amostra — o oposto da verbosidade que se costuma atribuir a assistentes de
-IA. Isso pesa na leitura da complexidade ciclomática **média**: ela também
-aparece menor no `com-ia`, mas é sensível ao número de funções extraídas
-(Seção 2.5) e ao SLOC menor, então essa leitura isolada é frágil. Um outlier
-foi identificado pela regra do IQR: `arthur/ranking-liga` (sem-ia, CC média
-19.0) — o kata mais pesado do conjunto (Seção 2.2), mantido na análise por
-ser observação legítima, não erro de coleta.
+Com os 12 pares, a complexidade ciclomática média e o SLOC de controle
+atingem significância a 5%, ambos com `com-ia` menor — incluindo o
+controle, o resultado não é artefato de o código `com-ia` só *parecer* mais
+simples por ser mais verboso (Seção 2.5); ele é, nesta amostra,
+simultaneamente mais curto e menos complexo. O Maintainability Index (métrica
+composta) não acompanha essa direção e fica sem diferença significativa —
+esperado, já que ele também soma o volume de Halstead, que não colapsa na
+mesma direção de SLOC/CC nesta amostra. Dois outliers foram identificados
+pela regra do IQR, ambos em `ranking-liga` `sem-ia` — `arthur` (CC média
+19.0) e `gabriel` (CC média 21.0) — o kata mais pesado do conjunto
+(Seção 2.2); mantidos na análise por serem observações legítimas, não erro
+de coleta. Um terceiro outlier aparece no MI: `pedro/fatura-progressiva`
+`com-ia` (MI 80.18).
 
 Duplicação ficou em 0% nos dois tratamentos em todos os pares — resultado
 esperado, não uma medição nula: o jscpd exige um bloco mínimo de ~50 tokens
