@@ -166,10 +166,10 @@ argumento de validade da Seção 2.8.
    intelectual de projeto**, deliberadamente separado da implementação.
 
 3. **Execução.** É aqui — e apenas aqui — que os tratamentos divergem:
-   - **`sem-ia`:** o participante implementa manualmente a solução no seu slot.
    - **`com-ia`:** a spec do passo 2 é fornecida como entrada ao agente, que
      executa a implementação. Quando a spec é insuficiente, o agente solicita
      esclarecimento ou pair programming, e a interação é registrada.
+   - **`sem-ia`:** o participante implementa manualmente a solução no seu slot.
 
 4. **Verificação.** A suíte de aceitação é executada. O trial encerra quando
    todos os testes passam (*green*) ou quando o time-box de 35 minutos expira,
@@ -181,18 +181,26 @@ argumento de validade da Seção 2.8.
 6. **Coleta.** Tempo e contagem de testes passando vão para `data/timings.csv`;
    as métricas estáticas do slot vão para `data/metrics.csv`.
 
-**Ordem dos tratamentos.** Para cada kata, o trial **`sem-ia` é executado
-antes do `com-ia`**. A ordem não é arbitrária: a revisão do código produzido
-pelo agente (passo 5) expõe decisões concretas de implementação, e realizá-la
-antes do trial manual forneceria ao participante pistas que a condição manual
-deve, por definição, não ter. A ordem inversa contaminaria o braço de controle.
+**Ordem dos tratamentos.** Para cada kata, o trial **`com-ia` é executado
+antes do `sem-ia`** — ordem fixada por todos os integrantes. A consequência
+para a validade é a oposta da que se esperaria a princípio: ao revisar (passo
+5) a solução produzida pelo agente antes de encarar o mesmo kata manualmente,
+o participante já viu uma abordagem funcional para o problema, o que pode
+tornar o trial `sem-ia` **artificialmente mais rápido ou mais bem-sucedido**
+do que seria isoladamente — não o inverso. Essa é a mesma ameaça de efeito de
+aprendizado residual já registrada na Seção 2.9; a consequência prática é que
+ela tende a **subestimar**, não inflar, a vantagem observada do `com-ia` na
+Seção 3 — um viés conservador em relação às hipóteses H1₁/H2₁.
 
 **Isolamento entre tratamentos.** Cada tratamento é implementado em uma branch
-distinta. Assim, durante o trial `com-ia` a solução manual daquele kata não
-está presente na árvore de trabalho e não pode ser indexada pelo assistente —
-garantia dada pelo versionamento, e não pela disciplina de manter arquivos
-fechados no editor. A spec entregue ao agente inclui instrução explícita de não
-buscar implementações prontas.
+distinta. Como o `com-ia` vem primeiro, o risco de indexação pelo assistente
+(ele "ver" uma solução pronta e copiá-la em vez de gerá-la) não se aplica ao
+próprio agente — não há solução manual anterior para indexar. O isolamento
+por branch protege, em vez disso, o trial `sem-ia`: a solução já implementada
+pelo agente para aquele kata não está presente na árvore de trabalho durante
+o trial manual, então o participante não pode abrir ou copiar o arquivo
+diretamente — apenas a memória de tê-la revisado (passo 5) permanece,
+que é a ameaça discutida no ponto anterior e não elimina por completo.
 
 **Encerramento por time-box.** Um trial que não atinge green em 35 minutos é
 registrado com `tempo_min = 35.0000` e `censurado = true`, **não é descartado** e
@@ -355,41 +363,44 @@ precificada nos dois lados do par. O que resta variando entre os tratamentos é
 exclusivamente a fase de implementação, que é justamente o objeto da
 intervenção.
 
-**Segundo, a spec é congelada antes da implementação manual, e é a única entrada
-do agente.** Como a ordem é `sem-ia` → `com-ia` e a spec é escrita no passo 2,
-ela já está fechada quando a implementação manual começa. O trial com IA recebe
-exatamente esse artefato — não uma versão revisada à luz do que o participante
-aprendeu implementando à mão. Qualquer aprendizado obtido durante a passagem
-manual fica, portanto, **fora do canal** que alimenta o segundo trial. Esse é o
-ponto central: no desenho repetido convencional, a segunda passagem herda tudo o
-que a pessoa aprendeu na primeira; aqui, o que a segunda passagem consome é um
-documento anterior à primeira.
+**Segundo, a spec é congelada antes de qualquer execução, e alimenta os dois
+tratamentos sem alteração.** O passo de confecção da spec (2) precede o passo
+de execução (3) nos dois casos — ela é escrita uma única vez, antes de o
+agente ou o participante começarem a implementar. Por isso nenhum tratamento
+retroalimenta o outro através da spec: o que se aprende implementando
+manualmente não chega ao agente por essa via, e nada no processo do agente
+poderia ter influenciado a spec que o participante recebe, porque essa spec já
+estava fechada antes de ambas as execuções existirem. A spec funciona como um
+ponto de controle comum, fixado antes de qualquer aprendizado específico de
+implementação.
 
-**Terceiro, a ordem protege o braço de controle, e a separação por branches
-impede o vazamento na direção oposta.** Executar o trial manual primeiro
-garante que a condição de controle ocorra sem qualquer exposição a código
-gerado para aquele kata. O risco simétrico — o agente indexar a solução manual,
-já existente naquele ponto, e devolvê-la como se fosse produção própria — é
-tratado implementando cada tratamento em uma **branch separada**: durante o
-trial `com-ia`, a solução manual daquele kata não está na árvore de trabalho,
-de modo que não há o que indexar. A garantia é dada pelo versionamento, não
-pela disciplina de quais arquivos permanecem abertos no editor, e a spec
-entregue ao agente reforça a instrução de não buscar implementações prontas. A
-revisão da solução do agente (passo 5) ocorre sempre após a parada do
-cronômetro. Some-se a isso que, nestes katas de escopo fechado, o agente
-executou a implementação integralmente a partir da spec na maioria dos trials:
-do ponto de vista do participante a etapa é **opaca**, ele especifica e recebe
-um resultado verificado por testes, sem percorrer as decisões de implementação
-linha a linha.
+**Terceiro, a ordem executada (`com-ia` → `sem-ia`) protege o agente, e a
+separação por branches limita — sem eliminar — a exposição do braço manual.**
+Como o `com-ia` é executado primeiro, não existe solução manual anterior para
+o agente indexar naquele kata: o risco de o agente "ver" uma implementação
+humana pronta e devolvê-la como produção própria simplesmente não se aplica,
+nesta ordem. O risco simétrico corre na outra direção — ao revisar (passo 5) a
+solução do agente antes de encarar o mesmo kata manualmente, o participante já
+viu uma implementação funcional daquele problema. A separação por branches
+impede que essa exposição vá além da memória do participante: durante o trial
+`sem-ia`, o arquivo da solução `com-ia` não está na árvore de trabalho, então
+não pode ser aberto ou copiado diretamente — só a lembrança de já ter visto uma
+abordagem funcionar permanece, e essa lembrança **não é eliminada** pelo
+isolamento de arquivos. A garantia de isolamento é dada pelo versionamento, não
+pela disciplina de quais arquivos permanecem abertos no editor.
 
 **Limite honesto do argumento.** As três medidas reduzem substancialmente o
-efeito, mas não o eliminam. Um participante que resolveu um kata manualmente
-retém alguma familiaridade com o problema, ainda que o projeto esteja registrado
-na spec. O grupo trata essa parcela residual como **ameaça aceita e declarada**,
-não como ameaça eliminada, e a leitura dos resultados da RQ1 (Seção 3) é feita
-sob essa ressalva. A alternativa — o desenho contrabalanceado — não era neutra:
-trocaria um viés residual e conhecido por um viés de dificuldade entre katas de
-magnitude desconhecida e direção dependente de sorteio.
+efeito, mas não o eliminam. Um participante que já revisou a solução do agente
+retém alguma familiaridade com o problema ao encarar o mesmo kata manualmente
+depois, ainda que o projeto em si esteja registrado e congelado na spec desde
+antes de qualquer execução. O grupo trata essa parcela residual como **ameaça
+aceita e declarada**, não como ameaça eliminada, e a leitura dos resultados da
+RQ1 (Seção 3) é feita sob essa ressalva — notando que essa ordem tende a
+**favorecer** o `sem-ia`, então a vantagem observada do `com-ia` é, se algo,
+subestimada por este viés, não inflada. A alternativa — o desenho
+contrabalanceado — não era neutra: trocaria um viés residual e conhecido por
+um viés de dificuldade entre katas de magnitude desconhecida e direção
+dependente de sorteio.
 
 ### 2.9 Demais ameaças à validade
 
@@ -397,7 +408,7 @@ magnitude desconhecida e direção dependente de sorteio.
 |---|---|
 | Memorização do kata pelo modelo | Adaptações que invalidam a solução canônica (Seção 2.2) |
 | Contaminação entre integrantes via indexação do workspace | Branch por integrante a partir da tag `katas-v1`; nenhum `pull` da branch de outro antes de concluir os próprios trials |
-| Agente indexar a solução manual do próprio participante | Branch separada por tratamento: no trial `com-ia` a solução manual do kata não está na árvore de trabalho; a spec instrui a não buscar implementações prontas |
+| Vazamento entre tratamentos do mesmo participante (agente→manual, já que `com-ia` executa primeiro) | Branch separada por tratamento: no trial `sem-ia` a solução `com-ia` do kata não está na árvore de trabalho; resíduo de memória tratado como ameaça aceita (Seção 2.8.3) |
 | Variação individual de habilidade | Desenho within-subject: cada integrante é comparado consigo mesmo |
 | Dificuldade não idêntica entre katas | Eliminada dentro do par pelo desenho repetido (Seção 2.8.2) |
 | Familiaridade prévia com o assistente | Registrada por integrante e reportada na Seção 4 |
@@ -420,6 +431,13 @@ definida para todos os trials independentemente do censuramento.
 Gerados por [`scripts/analyze_results.py`](../scripts/analyze_results.py) sobre
 `data/timings.csv` e `data/metrics.csv`. **N = 12 pares (integrante, kata)** —
 os 3 integrantes completos, 4 katas cada, conforme o desenho (Seção 2.1).
+
+**Dashboard (Passo 6).** Gerado por
+[`scripts/build_dashboard.py`](../scripts/build_dashboard.py) — boxplot com
+pontos individuais, `com-ia` vs `sem-ia`, para as seis métricas abaixo. As
+figuras individuais estão em `Relatorios/graficos/`.
+
+![Dashboard: com-ia vs sem-ia para RQ1, RQ2 e RQ3](graficos/dashboard.png)
 
 ### 3.1 RQ1 — Tempo de resolução
 
@@ -494,11 +512,99 @@ resolve antes mesmo de o agente ser acionado.
 
 ## 4. Discussão
 
-> A ser preenchido — Issue #24. Os números acima (Seção 3) já dão a base
-> estatística; falta a leitura crítica integrando RQ1–RQ3, a ressalva do
-> efeito de aprendizado residual (Seção 2.9) e a atualização quando os dados
-> de gabriel entrarem.
+### 4.1 Síntese por RQ
+
+**RQ1 (tempo) e RQ2 (defeitos) — resultado convergente e significativo.** O
+`com-ia` foi mais rápido (mediana 7,85 min vs. 34,88 min) e mais bem-sucedido
+(taxa de sucesso 1,00 vs. 0,50) que o `sem-ia`, com significância estatística
+nos dois casos (RQ1: p=0,0005; RQ2: p=0,0312 — Seções 3.1 e 3.2). Os dois
+efeitos apontam para a mesma direção e reforçam-se mutuamente: parte da
+vantagem de tempo não é apenas "digitar mais rápido" — é que seis dos doze
+trials `sem-ia` nunca chegaram a *green* dentro do time-box, e nenhum
+`com-ia` deixou de chegar. A métrica exploratória de RQ1 (Seção 3.4) — um
+único prompt por kata, suficiente para a solução completa — é consistente com
+essa leitura: para katas deste porte, a spec produzida no passo 2 do
+protocolo (Seção 2.4) parece capturar o essencial do problema, e a
+implementação em si é o que a IA resolve de forma confiável.
+
+**RQ3 (estrutura do código) — significativo em complexidade e no controle,
+não no índice composto.** A complexidade ciclomática média do `com-ia` foi
+menor (5,83 vs. 8,25; p=0,0117) e, criticamente, o **controle de LOC também
+foi menor** (SLOC 38,5 vs. 43,5; p=0,0137) — o código com IA não é apenas
+"aparentemente mais simples por ser mais verboso"; nesta amostra ele é
+simultaneamente **mais curto e menos complexo**, o oposto do que a
+verbosidade atribuída a assistentes de IA levaria a esperar. O Maintainability
+Index não acompanha essa direção (p=0,85) — por ser uma métrica composta que
+soma volume de Halstead, LOC e complexidade, o ganho em duas dessas
+componentes não necessariamente se propaga a ela nesta amostra pequena. A
+duplicação de código ficou em 0% nos dois tratamentos, em todos os 24 trials
+— isso não corrobora nem refuta H3, porque é um piso instrumental do jscpd
+(bloco mínimo de ~50 tokens, Seção 3.3), não uma medição de fato ausente de
+repetição de lógica.
+
+### 4.2 Leitura sob a ressalva do efeito de aprendizado residual
+
+A ordem executada (`com-ia` → `sem-ia`, Seção 2.4) tem uma consequência que
+precisa ser explícita aqui: ela tende a **favorecer o `sem-ia`**, não o
+`com-ia`. Ao revisar a solução do agente antes de implementar o mesmo kata à
+mão, cada participante já tinha visto uma abordagem funcional para o
+problema — uma vantagem que a condição manual não deveria ter, por definição
+(Seção 2.8.3). Isso significa que a vantagem do `com-ia` observada em RQ1 e
+RQ2 é, se algo, **subestimada** pelo desenho, não inflada: o `sem-ia` teve
+uma ajuda residual que o `com-ia` não teve, e mesmo assim ficou
+significativamente atrás. Essa é uma leitura mais forte para H1₁/H2₁ do que
+se a ressalva não existisse.
+
+**Familiaridade prévia com o assistente.** Os três integrantes já tinham
+usado Claude/Claude Code antes do experimento, em grau variado, mas nenhum
+pela primeira vez neste trabalho. Não há, portanto, um participante
+"iniciante absoluto" cujos trials `com-ia` estivessem sujeitos a uma curva de
+aprendizado da própria ferramenta — o grupo trata esse fator como
+relativamente controlado entre integrantes, embora não tenha sido medido em
+escala (limitação registrada em 4.3).
+
+### 4.3 Limitações
+
+- **N pequeno.** Doze pares é suficiente para os testes de Wilcoxon
+  reportarem significância em quatro das seis comparações, mas não sustenta
+  generalização além deste grupo e destes katas. Em RQ2 especificamente, seis
+  dos doze pares têm diferença zero e são descartados pelo teste
+  (Seção 3.2) — o N *efetivo* ali é a metade do nominal.
+- **Um único assistente, uma única versão.** A escolha do Claude Code
+  (Claude Opus 5, Seção 2.3) foi deliberada, mas os resultados não devem ser
+  generalizados para outros assistentes ou versões sem novas medições.
+- **Duplicação de código não observável nesta escala.** O piso de ~50 tokens
+  do jscpd (Seção 3.3) impede que RQ3 diga algo sobre duplicação em katas
+  deste tamanho; katas maiores, ou uma ferramenta com limiar configurável
+  mais baixo, seriam necessários para essa parte específica de H3.
+- **Familiaridade prévia não medida em escala.** Registrada qualitativamente
+  (4.2), não quantitativamente — não é possível separar estatisticamente o
+  efeito do tratamento do efeito de habilidade prévia com a ferramenta.
+- **Dificuldade dos katas.** `ranking-liga` é sistematicamente o kata mais
+  pesado (Seção 2.2) e concentra os outliers de RQ3 (Seção 3.3). O desenho
+  repetido neutraliza isso na comparação pareada, mas o dado bruto por kata
+  não deve ser lido fora desse contexto.
+
+### 4.4 Resposta às hipóteses
+
+| RQ | H0 | Decisão | Wilcoxon | N (pares) |
+|---|---|---|---|---|
+| RQ1 | Sem diferença de mediana no tempo | **Rejeitada** — `com-ia` menor (34,88 → 7,85 min) | W=0,0; p=0,0005 | 12 |
+| RQ2 | Sem diferença na taxa de sucesso | **Rejeitada** — `com-ia` maior (0,50 → 1,00) | W=0,0; p=0,0312 | 12 (6 efetivos) |
+| RQ3 — complexidade | Sem diferença na CC média | **Rejeitada** — `com-ia` menor (8,25 → 5,83) | W=3,5; p=0,0117 | 12 |
+| RQ3 — duplicação | Sem diferença na duplicação | **Não rejeitada** — sem evidência, não sem efeito (piso do jscpd, Seção 3.3) | teste não aplicável (0% nos dois lados) | 12 |
+
+Em RQ1 e RQ2 a rejeição de H0 é conservadora, não inflada — a ordem executada
+favorece o `sem-ia` (Seção 4.2). Em RQ3, a queda de complexidade veio junto
+com a queda no SLOC de controle: o código `com-ia` não é só mais curto, é
+também menos complexo. Duplicação fica indeterminada, não refutada — ninguém
+dos 24 trials teve bloco grande o bastante pro jscpd contar.
 
 ## 5. Repositório e board
 
-> A ser preenchido — Issue #24.
+- **Repositório:** <https://github.com/arthies2323/lab02-ia-vs-codificacao-manual>
+- **GitHub Projects (board):** <https://github.com/users/arthies2323/projects/2>
+
+O board contém as 15 issues do experimento (Sprints 1–3), cada uma com o(s)
+commit(s)/PR(s) correspondente(s) linkado(s) e o campo *Assignee* preenchido
+por integrante responsável, conforme exigido pelo enunciado.
